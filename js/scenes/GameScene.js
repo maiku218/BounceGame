@@ -357,7 +357,14 @@ class GameScene extends Phaser.Scene {
 	update() {
 		if (this.isPaused || !this.player || this.player.isDead) return;
 
-		const { left, right, up } = this.cursor;
+		const kbLeft = this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.LEFT) || this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.A);
+		const kbRight = this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.RIGHT) || this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.D);
+		const kbUp = this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.UP) || this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.W) || this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+		const left = this.cursor.left || kbLeft;
+		const right = this.cursor.right || kbRight;
+		const up = this.cursor.up || kbUp;
+
 		const speed = CONFIG.PHYSICS.PLAYER_SPEED * this.player.speedBoost;
 
 		this.player.body.setVelocityX(Phaser.Math.Clamp(this.player.body.velocity.x, -speed, speed));
@@ -389,16 +396,6 @@ class GameScene extends Phaser.Scene {
 		}
 		if (!onGroundNow) {
 			this.player.onGround = false;
-		}
-
-		if (this.input.keyboard.checkDown(this.inputKey.space, 50) || this.input.keyboard.checkDown(this.inputKey.up, 50)) {
-			if (!this.player.jumpPressed) {
-				this.player.jump();
-				this.player.jumpPressed = true;
-			}
-		}
-		if (!this.input.keyboard.checkDown(this.inputKey.space, 50) && !this.input.keyboard.checkDown(this.inputKey.up, 50)) {
-			this.player.jumpPressed = false;
 		}
 	}
 
