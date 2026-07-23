@@ -29,23 +29,22 @@ class BootScene extends Phaser.Scene {
 		overlay.classList.remove('hidden');
 
 		document.getElementById('firebase-login').addEventListener('click', () => {
-			const username = document.getElementById('firebase-username').value.trim();
+			const email = document.getElementById('firebase-email').value.trim();
 			const password = document.getElementById('firebase-password').value.trim();
 			const errorEl = document.getElementById('firebase-error');
 
-			if (!username || !password) {
-				errorEl.textContent = 'Please enter both username and password.';
+			if (!email || !password) {
+				errorEl.textContent = 'Please enter both email and password.';
 				errorEl.style.display = 'block';
 				return;
 			}
 
-			const email = username + '@bounce.local';
 			errorEl.style.display = 'none';
 			firebaseAuth.signInWithEmailAndPassword(email, password)
 				.then((cred) => {
 					const user = {
 						id: cred.user.uid,
-						name: cred.user.displayName || username,
+						name: cred.user.displayName || email,
 						email: email,
 						picture: '',
 						givenName: '',
@@ -61,12 +60,12 @@ class BootScene extends Phaser.Scene {
 		});
 
 		document.getElementById('firebase-register').addEventListener('click', () => {
-			const username = document.getElementById('firebase-username').value.trim();
+			const email = document.getElementById('firebase-email').value.trim();
 			const password = document.getElementById('firebase-password').value.trim();
 			const errorEl = document.getElementById('firebase-error');
 
-			if (!username || !password) {
-				errorEl.textContent = 'Please enter both username and password.';
+			if (!email || !password) {
+				errorEl.textContent = 'Please enter both email and password.';
 				errorEl.style.display = 'block';
 				return;
 			}
@@ -77,13 +76,12 @@ class BootScene extends Phaser.Scene {
 				return;
 			}
 
-			const email = username + '@bounce.local';
 			errorEl.style.display = 'none';
 			firebaseAuth.createUserWithEmailAndPassword(email, password)
 				.then((cred) => {
 					const user = {
 						id: cred.user.uid,
-						name: username,
+						name: email,
 						email: email,
 						picture: '',
 						givenName: '',
@@ -123,7 +121,7 @@ class BootScene extends Phaser.Scene {
 		this.user = null;
 		const overlay = document.getElementById('login-overlay');
 		overlay.classList.remove('hidden');
-		document.getElementById('firebase-username').value = '';
+		document.getElementById('firebase-email').value = '';
 		document.getElementById('firebase-password').value = '';
 		document.getElementById('firebase-error').style.display = 'none';
 	}
