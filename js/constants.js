@@ -38,7 +38,7 @@ const CONFIG = {
 	},
 
 	LEVELS: {
-		TOTAL: 5,
+		TOTAL: 10,
 		TILE_SIZE: 40
 	},
 
