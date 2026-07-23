@@ -6,16 +6,6 @@ class BootScene extends Phaser.Scene {
 	create() {
 		this.audio = new AudioManager(this);
 		this.save = new SaveSystem();
-		this.inputKey = this.input.keyboard.addKeys({
-			left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-			right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-			up: Phaser.Input.Keyboard.KeyCodes.UP,
-			space: Phaser.Input.Keyboard.KeyCodes.SPACE,
-			w: Phaser.Input.Keyboard.KeyCodes.W,
-			a: Phaser.Input.Keyboard.KeyCodes.A,
-			s: Phaser.Input.Keyboard.KeyCodes.S,
-			d: Phaser.Input.Keyboard.KeyCodes.D
-		});
 
 		this.physics.world.setBounds(0, 0, CONFIG.WINDOW_WIDTH, CONFIG.WINDOW_HEIGHT);
 
@@ -39,23 +29,24 @@ class BootScene extends Phaser.Scene {
 		overlay.classList.remove('hidden');
 
 		document.getElementById('firebase-login').addEventListener('click', () => {
-			const email = document.getElementById('firebase-email').value.trim();
+			const username = document.getElementById('firebase-username').value.trim();
 			const password = document.getElementById('firebase-password').value.trim();
 			const errorEl = document.getElementById('firebase-error');
 
-			if (!email || !password) {
-				errorEl.textContent = 'Please enter both email and password.';
+			if (!username || !password) {
+				errorEl.textContent = 'Please enter both username and password.';
 				errorEl.style.display = 'block';
 				return;
 			}
 
+			const email = username + '@bounce.local';
 			errorEl.style.display = 'none';
 			firebaseAuth.signInWithEmailAndPassword(email, password)
 				.then((cred) => {
 					const user = {
 						id: cred.user.uid,
-						name: cred.user.email,
-						email: cred.user.email,
+						name: cred.user.displayName || username,
+						email: email,
 						picture: '',
 						givenName: '',
 						familyName: ''
@@ -70,12 +61,12 @@ class BootScene extends Phaser.Scene {
 		});
 
 		document.getElementById('firebase-register').addEventListener('click', () => {
-			const email = document.getElementById('firebase-email').value.trim();
+			const username = document.getElementById('firebase-username').value.trim();
 			const password = document.getElementById('firebase-password').value.trim();
 			const errorEl = document.getElementById('firebase-error');
 
-			if (!email || !password) {
-				errorEl.textContent = 'Please enter both email and password.';
+			if (!username || !password) {
+				errorEl.textContent = 'Please enter both username and password.';
 				errorEl.style.display = 'block';
 				return;
 			}
@@ -86,13 +77,14 @@ class BootScene extends Phaser.Scene {
 				return;
 			}
 
+			const email = username + '@bounce.local';
 			errorEl.style.display = 'none';
 			firebaseAuth.createUserWithEmailAndPassword(email, password)
 				.then((cred) => {
 					const user = {
 						id: cred.user.uid,
-						name: cred.user.email,
-						email: cred.user.email,
+						name: username,
+						email: email,
 						picture: '',
 						givenName: '',
 						familyName: ''
@@ -131,7 +123,7 @@ class BootScene extends Phaser.Scene {
 		this.user = null;
 		const overlay = document.getElementById('login-overlay');
 		overlay.classList.remove('hidden');
-		document.getElementById('firebase-email').value = '';
+		document.getElementById('firebase-username').value = '';
 		document.getElementById('firebase-password').value = '';
 		document.getElementById('firebase-error').style.display = 'none';
 	}
