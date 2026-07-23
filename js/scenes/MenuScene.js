@@ -124,8 +124,7 @@ class MenuScene extends Phaser.Scene {
 	}
 
 	startGame() {
-		const nextLevel = this.save.data.unlockedLevels || 1;
-		this.startLevel(nextLevel);
+		this.startLevel(1);
 	}
 
 	openContinue() {
