@@ -56,6 +56,11 @@ class BootScene extends Phaser.Scene {
 			this.logout();
 		});
 
+		document.getElementById('guest-btn').addEventListener('click', () => {
+			const guestUser = { id: 'guest', name: 'Guest', email: 'guest' };
+			this.onAuthSuccess(guestUser);
+		});
+
 		document.getElementById('enter-btn').addEventListener('click', () => {
 			const overlay = document.getElementById('login-overlay');
 			overlay.classList.add('hidden');
