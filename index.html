@@ -150,23 +150,22 @@
 	<div id="game-container">
 		<div id="login-overlay">
 			<h1>BOUNCE</h1>
-			<p class="subtitle">Sign in to save your progress and compete on the leaderboard.</p>
-			<div id="g_id_onload" data-client_id="1081075236731-157639rn2u0eji7l4tiql6mf63cn1fp3.apps.googleusercontent.com" data-callback="handleGoogleSignIn"></div>
-			<div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with"
-				data-shape="rectangular" data-logo_alignment="left"></div>
-			<div id="user-info">
-				<img class="profile-pic" id="user-pic" src="" alt="Profile">
-				<div class="user-name" id="user-display-name"></div>
-				<div class="user-email" id="user-email"></div>
-			<button id="logout-btn">Sign Out</button>
-			<button id="enter-btn">ENTER GAME</button>
-			<button id="guest-btn" style="margin-top:10px;padding:10px 24px;border:2px solid #dc143c;background:transparent;color:#dc143c;border-radius:20px;cursor:pointer;font-size:0.9rem;font-weight:600;font-family:'Comic Sans MS',sans-serif;">PLAY AS GUEST</button>
-		</div>
+			<p class="subtitle">Sign in to save your progress.</p>
+			<div style="display:flex;flex-direction:column;gap:10px;width:260px;">
+				<input type="text" id="firebase-email" placeholder="Username / Email" style="padding:10px;border-radius:8px;border:2px solid #dc143c;font-size:16px;font-family:'Comic Sans MS',sans-serif;">
+				<input type="password" id="firebase-password" placeholder="Password" style="padding:10px;border-radius:8px;border:2px solid #dc143c;font-size:16px;font-family:'Comic Sans MS',sans-serif;">
+				<button id="firebase-login" style="padding:10px;border:none;background:linear-gradient(180deg,#ff6b8a,#dc143c);color:#fff;border-radius:20px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Comic Sans MS',sans-serif;">LOGIN</button>
+				<button id="firebase-register" style="padding:10px;border:2px solid #dc143c;background:transparent;color:#dc143c;border-radius:20px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Comic Sans MS',sans-serif;">REGISTER</button>
+				<button id="firebase-guest" style="padding:10px;border:2px solid #dc143c;background:transparent;color:#dc143c;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Comic Sans MS',sans-serif;">PLAY AS GUEST</button>
+			</div>
+			<p id="firebase-error" style="color:#8b0000;margin-top:10px;font-size:14px;font-family:'Comic Sans MS',sans-serif;display:none;"></p>
 		</div>
 	</div>
 
-	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+	<script src="js/firebase-config.js"></script>
 	<script src="js/constants.js"></script>
 	<script src="js/systems/SaveSystem.js"></script>
 	<script src="js/systems/AudioManager.js"></script>

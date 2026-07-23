@@ -19,52 +19,96 @@ class BootScene extends Phaser.Scene {
 
 		this.physics.world.setBounds(0, 0, CONFIG.WINDOW_WIDTH, CONFIG.WINDOW_HEIGHT);
 
-		this.checkGoogleAuth();
+		this.setupFirebaseAuth();
 	}
 
-	checkGoogleAuth() {
-		const user = this.save.getUser();
-		if (user) {
-			this.user = user;
-			this.onAuthSuccess(user);
-		} else {
-			this.showLoginScreen();
+	setupFirebaseAuth() {
+		const storedUser = this.save.getUser();
+		if (storedUser && storedUser.id !== 'guest') {
+			this.user = storedUser;
+			this.save.setUser(storedUser);
+			this.onAuthSuccess(storedUser);
+			return;
 		}
+
+		this.showLoginScreen();
 	}
 
 	showLoginScreen() {
 		const overlay = document.getElementById('login-overlay');
 		overlay.classList.remove('hidden');
 
-		window.handleGoogleSignIn = (response) => {
-			const credential = response.credential;
-			const payload = JSON.parse(atob(credential.split('.')[1]));
-			const user = {
-				id: payload.sub,
-				name: payload.name,
-				email: payload.email,
-				picture: payload.picture,
-				givenName: payload.given_name,
-				familyName: payload.family_name
-			};
-			window.currentUser = user;
-			sessionStorage.setItem('bounce_adventure_user', JSON.stringify(user));
-			this.onAuthSuccess(user);
-		};
+		document.getElementById('firebase-login').addEventListener('click', () => {
+			const email = document.getElementById('firebase-email').value.trim();
+			const password = document.getElementById('firebase-password').value.trim();
+			const errorEl = document.getElementById('firebase-error');
 
-		document.getElementById('logout-btn').addEventListener('click', () => {
-			this.logout();
+			if (!email || !password) {
+				errorEl.textContent = 'Please enter both email and password.';
+				errorEl.style.display = 'block';
+				return;
+			}
+
+			errorEl.style.display = 'none';
+			firebaseAuth.signInWithEmailAndPassword(email, password)
+				.then((cred) => {
+					const user = {
+						id: cred.user.uid,
+						name: cred.user.email,
+						email: cred.user.email,
+						picture: '',
+						givenName: '',
+						familyName: ''
+					};
+					window.currentUser = user;
+					this.onAuthSuccess(user);
+				})
+				.catch((err) => {
+					errorEl.textContent = err.message || 'Login failed.';
+					errorEl.style.display = 'block';
+				});
 		});
 
-		document.getElementById('guest-btn').addEventListener('click', () => {
+		document.getElementById('firebase-register').addEventListener('click', () => {
+			const email = document.getElementById('firebase-email').value.trim();
+			const password = document.getElementById('firebase-password').value.trim();
+			const errorEl = document.getElementById('firebase-error');
+
+			if (!email || !password) {
+				errorEl.textContent = 'Please enter both email and password.';
+				errorEl.style.display = 'block';
+				return;
+			}
+
+			if (password.length < 6) {
+				errorEl.textContent = 'Password must be at least 6 characters.';
+				errorEl.style.display = 'block';
+				return;
+			}
+
+			errorEl.style.display = 'none';
+			firebaseAuth.createUserWithEmailAndPassword(email, password)
+				.then((cred) => {
+					const user = {
+						id: cred.user.uid,
+						name: cred.user.email,
+						email: cred.user.email,
+						picture: '',
+						givenName: '',
+						familyName: ''
+					};
+					window.currentUser = user;
+					this.onAuthSuccess(user);
+				})
+				.catch((err) => {
+					errorEl.textContent = err.message || 'Registration failed.';
+					errorEl.style.display = 'block';
+				});
+		});
+
+		document.getElementById('firebase-guest').addEventListener('click', () => {
 			const guestUser = { id: 'guest', name: 'Guest', email: 'guest' };
 			this.onAuthSuccess(guestUser);
-		});
-
-		document.getElementById('enter-btn').addEventListener('click', () => {
-			const overlay = document.getElementById('login-overlay');
-			overlay.classList.add('hidden');
-			this.scene.start('MenuScene', { user: this.user, save: this.save, audio: this.audio });
 		});
 	}
 
@@ -73,40 +117,22 @@ class BootScene extends Phaser.Scene {
 		this.save.setUser(user);
 
 		const overlay = document.getElementById('login-overlay');
-		const userInfo = document.getElementById('user-info');
-		const signinDiv = document.querySelector('.g_id_signin');
+		overlay.classList.add('hidden');
 
-		if (signinDiv) signinDiv.style.display = 'none';
-		userInfo.style.display = 'block';
-
-		document.getElementById('user-pic').src = user.picture;
-		document.getElementById('user-display-name').textContent = user.name;
-		document.getElementById('user-email').textContent = user.email;
-
-		const enterBtn = document.getElementById('enter-btn');
-		if (enterBtn) {
-			enterBtn.addEventListener('click', () => {
-				overlay.classList.add('hidden');
-				this.scene.start('MenuScene', {
-					user: user,
-					save: this.save,
-					audio: this.audio
-				});
-			});
-		}
+		this.scene.start('MenuScene', {
+			user: user,
+			save: this.save,
+			audio: this.audio
+		});
 	}
 
 	logout() {
+		firebaseAuth.signOut().catch(() => {});
 		this.user = null;
-		this.save.setUser({ email: 'guest', name: 'Guest' });
-		sessionStorage.removeItem('bounce_adventure_user');
-
 		const overlay = document.getElementById('login-overlay');
-		const userInfo = document.getElementById('user-info');
-		const signinDiv = document.querySelector('.g_id_signin');
-
-		if (signinDiv) signinDiv.style.display = 'block';
-		userInfo.style.display = 'none';
 		overlay.classList.remove('hidden');
+		document.getElementById('firebase-email').value = '';
+		document.getElementById('firebase-password').value = '';
+		document.getElementById('firebase-error').style.display = 'none';
 	}
 }
